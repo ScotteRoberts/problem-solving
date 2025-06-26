@@ -1,0 +1,9 @@
+{
+  "tasks": {
+    "dev": "deno run --allow-env --allow-read --allow-net --watch main.ts"
+  },
+  "imports": {
+    "@discordeno/bot": "npm:@discordeno/bot@19.0.0",
+    "@std/assert": "jsr:@std/assert@1"
+  }
+}
