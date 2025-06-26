@@ -16,6 +16,9 @@ Create a discord bot that can monitor a user's presence update.
 - If they are online, you can enter a datetime of when they went online.
 - If they are offline, you can reset the timer
 
+Database considerations:
+- Service needs to be refreshed, but downtime of the service resets the timer on individuals
+
 ## Implementation
 
 There are a few technologies that I want to learn/practice to use while making this bot.
@@ -29,6 +32,8 @@ There are a few technologies that I want to learn/practice to use while making t
 
 There are a few Discord servers that I belong to to test functionality. 
 - Can get user feedback on timing of messages/annoyance of the project
+
+Mock a user going online and then going offline to see if the timeframe calculation is correct.
 
 ## Signoff
 
