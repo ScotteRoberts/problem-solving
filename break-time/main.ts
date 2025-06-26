@@ -1,77 +1,23 @@
-import { load } from "https://deno.land/std@0.212.0/dotenv/mod.ts";
-import {
-  createBot,
-  Intents,
-  PresenceStatus,
-  PresenceUpdate,
-} from "@discordeno/bot";
+import { PresenceUpdate } from "@discordeno/bot";
+import { bot } from "./bot.ts";
+import { updateSession } from "./events/presenceUpdate.ts";
+import { presenceSessionStart } from "./session/state.ts";
+import { startSessionInterval } from "./session/interval.ts";
 
-const env = await load();
+bot.events.ready = async (payload) => {
+  bot.logger.info("Startup payload");
+  bot.logger.info(payload);
 
-const userSessionStart: Record<string, number> = {};
+  presenceSessionStart["123"] = Date.now()
+};
 
-const bot = createBot({
-  token: env.discord_bot_token,
-  intents: Intents.Guilds | Intents.GuildMessages | Intents.MessageContent |
-    Intents.GuildPresences,
-  events: {
-    ready(payload) {
-      console.log(payload);
-    },
-    presenceUpdate(presence: PresenceUpdate) {
-      const userId = presence.user?.id.toString();
-      const status = presence.status;
+bot.events.voiceStateUpdate = (voiceState) => {
+};
 
-      if (!userId) return;
-
-      if (status === PresenceStatus.online && !userSessionStart[userId]) {
-        userSessionStart[userId] = Date.now();
-        console.log(
-          `User ${userId} came online at ${new Date(userSessionStart[userId])}`,
-        );
-      } else if (
-        (status === PresenceStatus.offline ||
-          status === PresenceStatus.idle ||
-          status === PresenceStatus.dnd) &&
-        userSessionStart[userId]
-      ) {
-        const sessionTime = Date.now() - userSessionStart[userId];
-        console.log(
-          `User ${userId} went offline. Session time: ${
-            Math.round(sessionTime / 1000)
-          } seconds`,
-        );
-        delete userSessionStart[userId];
-      }
-    },
-  },
-  desiredProperties: {
-    message: {
-      id: true,
-      author: true,
-      content: true,
-    },
-    user: {
-      id: true,
-      toggles: true, // Toggles includes the "bot" flag
-      username: true,
-    },
-  },
-});
+bot.events.presenceUpdate = (presence: PresenceUpdate) => {
+  updateSession(presence, presenceSessionStart);
+};
 
 await bot.start();
 
-// 5 minutes
-const breakTimeThresholdMS = 300000;
-const intervalPeriodMS = 1000;
-
-setInterval(() => {
-  const now = Date.now();
-  for (const [userId, startTime] of Object.entries(userSessionStart)) {
-    const elapsed = now - startTime;
-    if (elapsed > breakTimeThresholdMS) {
-      console.log(`User ${userId} has been online for more than 5 minutes!`);
-      // You can add additional actions here, e.g., send a message or notification
-    }
-  }
-}, intervalPeriodMS);
+startSessionInterval(presenceSessionStart);

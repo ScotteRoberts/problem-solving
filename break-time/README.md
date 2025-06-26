@@ -28,6 +28,9 @@ There are a few technologies that I want to learn/practice to use while making t
 - Docker
 - Fly.io (hosting service)
 
+Limitations
+- Discord api does not have the ability to fetch all "online" users in a given guild
+
 ## Testing
 
 There are a few Discord servers that I belong to to test functionality. 
