@@ -2,7 +2,7 @@ import { PresenceStatus, PresenceUpdate } from "@discordeno/bot";
 import { formatMillisecondsToTime } from "../time/format.ts";
 import { bot } from "../bot.ts";
 
-export function updateSession(presence: PresenceUpdate, session: Record<string, number>) {
+export function updateOnlineSession(presence: PresenceUpdate, session: Record<string, number>) {
   const userId = presence.user?.id.toString();
   const status = presence.status;
 

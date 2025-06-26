@@ -5,9 +5,8 @@ const env = await load();
 
 export const bot = createBot({
   token: env.discord_bot_token,
-  intents: Intents.Guilds | Intents.GuildMessages |
-    Intents.GuildMembers |
-    Intents.GuildPresences,
+  intents: Intents.Guilds | Intents.GuildMessages | Intents.GuildMembers |
+    Intents.GuildPresences | Intents.GuildVoiceStates,
   desiredProperties: {
     message: {
       id: true,
@@ -28,7 +27,15 @@ export const bot = createBot({
       guildId: true,
       toggles: true,
       sessionId: true,
-      userId: true
-    }
+      userId: true,
+    },
+    guild: {
+      voiceStates: true,
+    },
+    channel: {
+      id: true,
+      type: true,
+      name: true,
+    },
   },
 });

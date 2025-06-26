@@ -1,20 +1,16 @@
-import { bot } from "../bot.ts";
-import { formatMillisecondsToTime } from "../time/format.ts";
-
 const timeThreshold = 60000;
 const interval = 1000;
 
-export function startSessionInterval(session: Record<string, number>) {
+export function startSessionInterval(
+  session: Record<string, number>,
+  action: (id: string, elapsed: number) => void,
+) {
   setInterval(() => {
     const now = Date.now();
-    for (const [userId, startTime] of Object.entries(session)) {
+    for (const [id, startTime] of Object.entries(session)) {
       const elapsed = now - startTime;
       if (elapsed % timeThreshold <= interval && elapsed > interval) {
-        bot.logger.info(
-          `User ${userId} has been online for ${
-            formatMillisecondsToTime(elapsed)
-          }!`,
-        );
+        action(id, elapsed);
         // You can add additional actions here, e.g., send a message or notification
       }
     }
