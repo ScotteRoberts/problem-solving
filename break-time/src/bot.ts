@@ -1,11 +1,14 @@
-import { load } from "https://deno.land/std@0.212.0/dotenv/mod.ts";
+import "jsr:@std/dotenv/load";
 import { createBot, Intents } from "@discordeno/bot";
 import { createProxyCache } from "dd-cache-proxy";
 
-const env = await load();
+const token = Deno.env.get("DISCORD_BOT_TOKEN");
+if (token === undefined) {
+  throw new Error("discord token is not set");
+}
 
 const botConfig = createBot({
-  token: env.discord_bot_token,
+  token,
   intents: Intents.Guilds | Intents.GuildMembers | Intents.GuildVoiceStates |
     Intents.GuildMessages | Intents.GuildPresences,
 
