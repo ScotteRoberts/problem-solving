@@ -1,42 +1,65 @@
-import { VoiceState } from "@discordeno/bot";
+import { VoiceState, VoiceStateToggles } from "@discordeno/bot";
 import { bot } from "../bot.ts";
-import { CachedUser, Session } from "../types.ts";
+import { CachedUser, OfflineToggleKeys, VoiceSessions } from "../types.ts";
 import { formatMillisecondsToTime } from "../time/format.ts";
 
-async function createChatSession(
-  session: Session,
+async function createVoiceSession(
+  sessions: VoiceSessions,
   user: CachedUser,
   channelId: bigint,
 ) {
   const userId = user.id.toString();
   const channel = await bot.cache.channels.get(channelId) ||
     await bot.helpers.getChannel(channelId);
-  session[userId] = Date.now();
+  sessions[userId] = {
+    channelId,
+    datetime: Date.now(),
+  };
   bot.logger.info(
     `User ${user?.username} entered channel ${channel?.name} at ${new Date(
-      session[userId],
+      sessions[userId].datetime,
     )}`,
   );
 }
 
-function deleteChatSession(session: Session, user: CachedUser) {
+function deleteVoiceSession(sessions: VoiceSessions, user: CachedUser) {
   const userId = user.id.toString();
-  const sessionStart = session[userId];
-  if (!sessionStart) {
+  if (!sessions[userId]) {
     return;
   }
+
+  const sessionStart = sessions[userId].datetime;
   const sessionTime = Date.now() - sessionStart;
   bot.logger.info(
     `User ${user?.username} took a break from chat. Session time: ${
       formatMillisecondsToTime(sessionTime)
     }`,
   );
-  delete session[userId];
+  delete sessions[userId];
 }
 
-export async function updateChatSession(
+export function isOfflineInVoice(toggles: VoiceStateToggles): boolean {
+  const toggleRecord = toggles.list();
+  const isOffline = (Object.keys(toggleRecord) as OfflineToggleKeys[]).some(
+    (key) =>
+      toggleRecord[key] &&
+      (["deaf", "mute", "selfDeaf", "selfMute"] as OfflineToggleKeys[])
+        .includes(key),
+  );
+  return isOffline;
+}
+
+export function isOnlineInSameVoice(
+  sessions: VoiceSessions,
+  user: CachedUser,
+  channelId: bigint,
+): boolean {
+  return sessions[user.id.toString()]?.channelId === channelId;
+}
+
+export async function updateVoiceSession(
   voiceState: VoiceState,
-  session: Session,
+  sessions: VoiceSessions,
 ) {
   if (!voiceState.userId || !voiceState.toggles) {
     return;
@@ -48,15 +71,13 @@ export async function updateChatSession(
   }
 
   const channelId = voiceState.channelId;
-  const toggleRecord = voiceState.toggles.list();
-
-  // Figure out how to handle selfStream, selfVideo, suppress
   if (
-    toggleRecord.deaf || toggleRecord.mute || toggleRecord.selfDeaf ||
-    toggleRecord.selfMute
+    isOfflineInVoice(voiceState.toggles) || channelId === undefined
   ) {
-    deleteChatSession(session, user);
-  } else if (channelId) {
-    await createChatSession(session, user, channelId);
+    deleteVoiceSession(sessions, user);
+  } else if (isOnlineInSameVoice(sessions, user, channelId)) {
+    // no op
+  } else {
+    await createVoiceSession(sessions, user, channelId);
   }
 }

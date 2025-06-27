@@ -1,11 +1,11 @@
 import { PresenceStatus, PresenceUpdate } from "@discordeno/bot";
 import { bot } from "../bot.ts";
 import { formatMillisecondsToTime } from "../time/format.ts";
-import { Session } from "../types.ts";
+import { PresenceSessions } from "../types.ts";
 
 export async function updateOnlineSession(
   presence: PresenceUpdate,
-  session: Session,
+  sessions: PresenceSessions,
 ) {
   const userId = presence.user?.id.toString();
   if (!userId) return;
@@ -14,25 +14,25 @@ export async function updateOnlineSession(
   const username = presence.user.username ||
     (await bot.cache.users.get(presence.user.id))?.username;
 
-  if (status === PresenceStatus.online && !session[userId]) {
-    session[userId] = Date.now();
+  if (status === PresenceStatus.online && !sessions[userId]) {
+    sessions[userId] = Date.now();
     bot.logger.info(
       `User ${username} came online at ${new Date(
-        session[userId],
+        sessions[userId],
       )}`,
     );
   } else if (
     (status === PresenceStatus.offline ||
       status === PresenceStatus.idle ||
       status === PresenceStatus.dnd) &&
-    session[userId]
+    sessions[userId]
   ) {
-    const sessionTime = Date.now() - session[userId];
+    const sessionTime = Date.now() - sessions[userId];
     bot.logger.info(
       `User ${username} took a break from Discord. Session time: ${
         formatMillisecondsToTime(sessionTime)
       }`,
     );
-    delete session[userId];
+    delete sessions[userId];
   }
 }

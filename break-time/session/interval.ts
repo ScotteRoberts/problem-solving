@@ -1,41 +1,48 @@
 import { bot } from "../bot.ts";
 import { formatMillisecondsToTime } from "../time/format.ts";
-import { presenceSessionStart, voiceSessionStart } from "./state.ts";
+import {
+  BREAK_CHECK_INTERVAL,
+  BREAK_TIME_THRESHOLD,
+  presenceSessionStart,
+  voiceSessionStart,
+} from "./state.ts";
 
+export async function startBreakTimeChecking() {
+  while (true) {
+    await new Promise((r) => setTimeout(r, BREAK_CHECK_INTERVAL));
+    await checkBreakTime();
+  }
+}
 
-const timeThreshold = 7200000;
-const interval = 300000;
+async function checkBreakTime() {
+  bot.logger.info("** Checking for break time **");
+  // If someone is not present, we don't do anything to bug them.
+  const voiceSessionStartEntries = Object.entries(voiceSessionStart).filter(
+    ([voiceId, _]) => {
+      return presenceSessionStart[voiceId];
+    },
+  );
 
-export function startBreakTimeChecking() {
-  setInterval(async () => {
-    // If someone is not present, we don't do anything to bug them.
-    const voiceSessionStartEntries = Object.entries(voiceSessionStart).filter(
-      ([voiceId, _]) => {
-        return presenceSessionStart[voiceId];
-      },
-    );
+  for await (
+    const [voiceId, voiceStartTime] of voiceSessionStartEntries
+  ) {
+    const now = Date.now();
+    const voiceElapsed = now - voiceStartTime.datetime;
+    const presenceElapsed = now - presenceSessionStart[voiceId];
 
-    for await (
-      const [voiceId, voiceStartTime] of voiceSessionStartEntries
+    const minimumElapsedTime = Math.min(voiceElapsed, presenceElapsed);
+
+    if (
+      breakTimeCondition(minimumElapsedTime)
     ) {
-      const now = Date.now();
-      const voiceElapsed = now - voiceStartTime;
-      const presenceElapsed = now - presenceSessionStart[voiceId];
-
-      const minimumElapsedTime = Math.min(voiceElapsed, presenceElapsed);
-
-      if (
-        breakTimeCondition(minimumElapsedTime)
-      ) {
-        await breakTimeAction(voiceId, minimumElapsedTime);
-      }
+      await breakTimeAction(voiceId, minimumElapsedTime);
     }
-  }, interval);
+  }
 }
 
 function breakTimeCondition(elapsedTime: number) {
-  return elapsedTime % timeThreshold <= interval &&
-    elapsedTime > interval;
+  return elapsedTime % BREAK_TIME_THRESHOLD <= BREAK_CHECK_INTERVAL &&
+    elapsedTime > BREAK_CHECK_INTERVAL;
 }
 
 /**

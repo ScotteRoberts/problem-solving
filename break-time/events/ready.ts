@@ -1,6 +1,13 @@
 import { bot } from "../bot.ts";
 import { InferredPayload, Session } from "../types.ts";
+import { isOfflineInChat } from "./voiceStateUpdate.ts";
 
+/**
+ * @param payload
+ * @param pressenceSession
+ * @param chatSession
+ * @deprecated
+ */
 export async function initializeVoiceSession(
   payload: InferredPayload,
   pressenceSession: Session,
@@ -14,13 +21,15 @@ export async function initializeVoiceSession(
       });
 
     for (const member of members) {
-      pressenceSession[member.id.toString()] = Date.now();
       try {
         const voiceState = await bot.helpers.getUserVoiceState(
           guildId,
           member.id,
         );
-        chatSession[voiceState.userId.toString()] = Date.now();
+
+        if (!isOfflineInChat(voiceState.toggles)) {
+          chatSession[voiceState.userId.toString()] = Date.now();
+        }
       } catch (error) {
         bot.logger.debug(error);
       }

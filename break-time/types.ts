@@ -1,6 +1,21 @@
+import { VoiceStateToggleKeys } from "@discordeno/bot";
 import { bot } from "./bot.ts";
 
-export type Session = Record<string, number>;
+export type VoiceSession = {
+  datetime: number;
+  channelId: bigint;
+};
+export type VoiceSessions = Record<string, VoiceSession>;
+export type PresenceSessions = Record<string, number>;
+
+export type IgnoredToggleKeys = Extract<
+  VoiceStateToggleKeys,
+  "selfStream" | "selfVideo" | "suppress"
+>;
+export type OfflineToggleKeys = Extract<
+  VoiceStateToggleKeys,
+  "deaf" | "mute" | "selfDeaf" | "selfMute"
+>;
 
 export type InferredGuild = typeof bot.transformers.$inferredTypes.guild;
 export type InferredMessage = typeof bot.transformers.$inferredTypes.message;

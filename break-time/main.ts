@@ -1,7 +1,7 @@
 import { bot } from "./bot.ts";
 import { updateOnlineSession } from "./events/presenceUpdate.ts";
-import { initializeVoiceSession } from "./events/ready.ts";
-import { updateChatSession } from "./events/voiceStateUpdate.ts";
+// import { initializeVoiceSession } from "./events/ready.ts";
+import { updateVoiceSession } from "./events/voiceStateUpdate.ts";
 import { startBreakTimeChecking } from "./session/interval.ts";
 import { presenceSessionStart, voiceSessionStart } from "./session/state.ts";
 
@@ -11,16 +11,16 @@ function handleError(error: unknown) {
 
 bot.events.ready = async (payload) => {
   bot.logger.info("============ Starting Bot ===============");
-  await initializeVoiceSession(
-    payload,
-    presenceSessionStart,
-    voiceSessionStart,
-  );
+  // await initializeVoiceSession(
+  //   payload,
+  //   presenceSessionStart,
+  //   voiceSessionStart,
+  // );
 };
 
 bot.events.voiceStateUpdate = async (voiceState) => {
   try {
-    await updateChatSession(voiceState, voiceSessionStart);
+    await updateVoiceSession(voiceState, voiceSessionStart);
   } catch (error) {
     handleError(error);
   }
