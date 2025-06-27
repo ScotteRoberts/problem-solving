@@ -1,5 +1,7 @@
 import { bot } from "./bot.ts";
 
+export type Session = Record<string, number>;
+
 export type InferredGuild = typeof bot.transformers.$inferredTypes.guild;
 export type InferredMessage = typeof bot.transformers.$inferredTypes.message;
 export type InferredUser = typeof bot.transformers.$inferredTypes.user;

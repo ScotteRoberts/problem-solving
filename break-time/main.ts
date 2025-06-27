@@ -1,10 +1,13 @@
 import { bot } from "./bot.ts";
 import { updateOnlineSession } from "./events/presenceUpdate.ts";
-import { presenceSessionStart, voiceSessionStart } from "./session/state.ts";
-import { startSessionInterval } from "./session/interval.ts";
 import { initializeVoiceSession } from "./events/ready.ts";
-import { formatMillisecondsToTime } from "./time/format.ts";
 import { updateChatSession } from "./events/voiceStateUpdate.ts";
+import { startBreakTimeChecking } from "./session/interval.ts";
+import { presenceSessionStart, voiceSessionStart } from "./session/state.ts";
+
+function handleError(error: unknown) {
+  bot.logger.error(error);
+}
 
 bot.events.ready = async (payload) => {
   bot.logger.info("============ Starting Bot ===============");
@@ -12,20 +15,21 @@ bot.events.ready = async (payload) => {
 };
 
 bot.events.voiceStateUpdate = async (voiceState) => {
-  await updateChatSession(voiceState, voiceSessionStart);
+  try {
+    await updateChatSession(voiceState, voiceSessionStart);
+  } catch (error) {
+    handleError(error);
+  }
 };
 
 bot.events.presenceUpdate = async (presence) => {
-  await updateOnlineSession(presence, presenceSessionStart);
+  try {
+    await updateOnlineSession(presence, presenceSessionStart);
+  } catch (error) {
+    handleError(error);
+  }
 };
 
 await bot.start();
 
-startSessionInterval(voiceSessionStart, async (id, elapsed) => {
-  const username = (await bot.cache.users.get(BigInt(id)))?.username || id;
-  bot.logger.info(
-    `User ${username} has been in the chat for ${
-      formatMillisecondsToTime(elapsed)
-    }. Time to take a break...`,
-  );
-});
+startBreakTimeChecking();

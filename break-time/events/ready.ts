@@ -1,9 +1,9 @@
 import { bot } from "../bot.ts";
-import { InferredPayload } from "../inferred-types.ts";
+import { InferredPayload, Session } from "../types.ts";
 
 export async function initializeVoiceSession(
   payload: InferredPayload,
-  session: Record<string, number>,
+  session: Session,
 ) {
   // bot.logger.info("Initializing voice session start...")
   // for (const guildId of payload.guilds) {

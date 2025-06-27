@@ -33,6 +33,7 @@ There are a few technologies that I want to learn/practice to use while making t
 
 Limitations
 - Discord api does not have the ability to fetch all "online" users in a given guild
+- Viewing private channels would be an "Administrator" level privilege. I would like to avoid requesting that level of permission in a Guild, so I will limit my bot's activity to public channels
 
 Challenges
 - The `VoiceState.toggle` type has multiple state conditions based on the user/server audio controls
@@ -41,6 +42,7 @@ Challenges
   - SelfMute
   - SelfDeaf
   - etc.
+
 
 ## Testing
 

@@ -1,2 +1,4 @@
-export const voiceSessionStart: Record<string, number> = {};
-export const presenceSessionStart: Record<string, number> = {};
+import { Session } from "../types.ts";
+
+export const voiceSessionStart: Session = {};
+export const presenceSessionStart: Session = {};
