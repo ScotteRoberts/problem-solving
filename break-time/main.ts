@@ -11,7 +11,11 @@ function handleError(error: unknown) {
 
 bot.events.ready = async (payload) => {
   bot.logger.info("============ Starting Bot ===============");
-  await initializeVoiceSession(payload, voiceSessionStart);
+  await initializeVoiceSession(
+    payload,
+    presenceSessionStart,
+    voiceSessionStart,
+  );
 };
 
 bot.events.voiceStateUpdate = async (voiceState) => {
