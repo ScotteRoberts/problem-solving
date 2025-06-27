@@ -2,16 +2,22 @@ import { PresenceStatus, PresenceUpdate } from "@discordeno/bot";
 import { formatMillisecondsToTime } from "../time/format.ts";
 import { bot } from "../bot.ts";
 
-export function updateOnlineSession(presence: PresenceUpdate, session: Record<string, number>) {
+export async function updateOnlineSession(
+  presence: PresenceUpdate,
+  session: Record<string, number>,
+) {
   const userId = presence.user?.id.toString();
-  const status = presence.status;
-
   if (!userId) return;
+
+  const status = presence.status;
+  const username = presence.user.username || (await bot.cache.users.get(presence.user.id))?.username
 
   if (status === PresenceStatus.online && !session[userId]) {
     session[userId] = Date.now();
     bot.logger.info(
-      `User ${userId} came online at ${new Date(session[userId])}`,
+      `User ${username} came online at ${new Date(
+        session[userId],
+      )}`,
     );
   } else if (
     (status === PresenceStatus.offline ||
@@ -21,7 +27,7 @@ export function updateOnlineSession(presence: PresenceUpdate, session: Record<st
   ) {
     const sessionTime = Date.now() - session[userId];
     bot.logger.info(
-      `User ${userId} took a break. Session time: ${
+      `User ${username} took a break from Discord. Session time: ${
         formatMillisecondsToTime(sessionTime)
       }`,
     );

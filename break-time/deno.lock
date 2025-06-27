@@ -3,7 +3,8 @@
   "specifiers": {
     "jsr:@std/assert@1": "1.0.13",
     "jsr:@std/internal@^1.0.6": "1.0.8",
-    "npm:@discordeno/bot@21.0.0": "21.0.0"
+    "npm:@discordeno/bot@21.0.0": "21.0.0",
+    "npm:dd-cache-proxy@^2.6.4": "2.6.4_@discordeno+bot@21.0.0"
   },
   "jsr": {
     "@std/assert@1.0.13": {
@@ -53,6 +54,12 @@
         "@discordeno/types"
       ]
     },
+    "dd-cache-proxy@2.6.4_@discordeno+bot@21.0.0": {
+      "integrity": "sha512-QwLhNziqH1pxYFyn8UYBC76rgxRp8Bjgwf0sbqbrLvDDUxbE7mUj7ICzkYUTIBT9/1JGADeai4IGxhNJl2tuOg==",
+      "dependencies": [
+        "@discordeno/bot"
+      ]
+    },
     "fzstd@0.1.1": {
       "integrity": "sha512-dkuVSOKKwh3eas5VkJy1AW1vFpet8TA/fGmVA5krThl8YcOVE/8ZIoEA1+U1vEn5ckxxhLirSdY837azmbaNHA=="
     },
@@ -60,10 +67,16 @@
       "integrity": "sha512-DMricUmwGZUVr++AEAe2uiVM7UoO9MAVZMDu05UQOaUII0lp+zOzLLU4Xqh/JvTqklB1T4uELaaPBKyjE1r4fQ=="
     }
   },
+  "remote": {
+    "https://deno.land/std@0.212.0/dotenv/mod.ts": "46cc7a78cf3f7ba533c8c9b90407a365f925be332ebdc867a1f502614e3d8523",
+    "https://deno.land/std@0.212.0/dotenv/parse.ts": "55d5d1a5ba76c1324e6dc2f2f7917f03c47e5da5c2c55af11fd0fe2d6a3d3a2e",
+    "https://deno.land/std@0.212.0/dotenv/stringify.ts": "0047ad7068289735d08964046aea267a750c141b494ca0e38831b89be6c020c2"
+  },
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@1",
-      "npm:@discordeno/bot@21.0.0"
+      "npm:@discordeno/bot@21.0.0",
+      "npm:dd-cache-proxy@^2.6.4"
     ]
   }
 }

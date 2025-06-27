@@ -1,4 +1,3 @@
-import { PresenceUpdate, VoiceState } from "@discordeno/bot";
 import { bot } from "./bot.ts";
 import { updateOnlineSession } from "./events/presenceUpdate.ts";
 import { presenceSessionStart, voiceSessionStart } from "./session/state.ts";
@@ -8,29 +7,24 @@ import { formatMillisecondsToTime } from "./time/format.ts";
 import { updateChatSession } from "./events/voiceStateUpdate.ts";
 
 bot.events.ready = async (payload) => {
-  bot.logger.info("Startup payload");
-  bot.logger.info(payload);
+  bot.logger.info("============ Starting Bot ===============");
   await initializeVoiceSession(payload, voiceSessionStart);
 };
 
-bot.events.voiceStateUpdate = (voiceState: VoiceState) => {
-  updateChatSession(voiceState, voiceSessionStart);
+bot.events.voiceStateUpdate = async (voiceState) => {
+  await updateChatSession(voiceState, voiceSessionStart);
 };
 
-bot.events.presenceUpdate = (presence: PresenceUpdate) => {
-  updateOnlineSession(presence, presenceSessionStart);
+bot.events.presenceUpdate = async (presence) => {
+  await updateOnlineSession(presence, presenceSessionStart);
 };
 
 await bot.start();
 
-startSessionInterval(presenceSessionStart, (id, elapsed) => {
+startSessionInterval(voiceSessionStart, async (id, elapsed) => {
+  const username = (await bot.cache.users.get(BigInt(id)))?.username || id;
   bot.logger.info(
-    `User ${id} has been online for ${formatMillisecondsToTime(elapsed)}!`,
-  );
-});
-startSessionInterval(voiceSessionStart, (id, elapsed) => {
-  bot.logger.info(
-    `User ${id} has been in the chat for ${
+    `User ${username} has been in the chat for ${
       formatMillisecondsToTime(elapsed)
     }. Time to take a break...`,
   );

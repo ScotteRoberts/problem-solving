@@ -5,7 +5,10 @@
 - Create a running log of active users in Discord voice chats. If that is too hard, you can use the user's discord status as a backup measure.
 - Message users after a configurable period of time that they need to take a break
   - Offer something constructive to do while they take a break
-  - Respect the DND (Do Not Disturb) status
+  - Conditions:
+    - Respect the DND (Do Not Disturb) status
+    - If a user mutes, they are taking a break
+    - If a user deafens, they are taking a break
 - This service should run all the time, but messages can be shut off by the owner/admins of the server in some way.
 - Users should be able to interact with the service to see how long other users in the Discord server have been online. 
   - Can be made into a leaderboard of some kind (if you are feeling adventurous)
@@ -30,6 +33,14 @@ There are a few technologies that I want to learn/practice to use while making t
 
 Limitations
 - Discord api does not have the ability to fetch all "online" users in a given guild
+
+Challenges
+- The `VoiceState.toggle` type has multiple state conditions based on the user/server audio controls
+  - Mute
+  - Deaf
+  - SelfMute
+  - SelfDeaf
+  - etc.
 
 ## Testing
 

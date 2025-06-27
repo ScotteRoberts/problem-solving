@@ -1,5 +1,5 @@
-const timeThreshold = 60000;
-const interval = 1000;
+const timeThreshold = 300000;
+const interval = 60000;
 
 export function startSessionInterval(
   session: Record<string, number>,

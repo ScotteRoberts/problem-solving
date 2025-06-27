@@ -1,12 +1,14 @@
 import { load } from "https://deno.land/std@0.212.0/dotenv/mod.ts";
 import { createBot, Intents } from "@discordeno/bot";
+import { createProxyCache } from "dd-cache-proxy";
 
 const env = await load();
 
-export const bot = createBot({
+const botConfig = createBot({
   token: env.discord_bot_token,
-  intents: Intents.Guilds | Intents.GuildMessages | Intents.GuildMembers |
-    Intents.GuildPresences | Intents.GuildVoiceStates,
+  intents: Intents.Guilds | Intents.GuildMembers | Intents.GuildVoiceStates |
+    Intents.GuildMessages | Intents.GuildPresences,
+
   desiredProperties: {
     message: {
       id: true,
@@ -20,7 +22,9 @@ export const bot = createBot({
     },
     member: {
       id: true,
+      guildId: true,
       user: true,
+      nick: true,
     },
     voiceState: {
       channelId: true,
@@ -30,12 +34,36 @@ export const bot = createBot({
       userId: true,
     },
     guild: {
+      id: true,
       voiceStates: true,
+      members: true,
     },
     channel: {
       id: true,
+      guildId: true,
       type: true,
       name: true,
     },
   },
+});
+
+// Create a cache for users (and optionally other structures)
+export const bot = createProxyCache(botConfig, {
+  desiredProps: {
+    guild: ["id", "members"],
+    user: ["id", "username", "bot"], // Cache the username and id
+    member: ["id", "guildId", "user"],
+    channel: ["id", "guildId", "name"],
+  },
+  // Define what to cache in memory. All props are optional except `default`. By default, all props inside `cacheInMemory` are set to `true`.
+  cacheInMemory: {
+    // Whether or not to cache guilds.
+    guild: true,
+    user: true,
+    member: true,
+    channel: true,
+    // Default value for the properties that are not provided inside `cacheInMemory`.
+    default: false,
+  },
+  // You can add more structures to cache as needed
 });

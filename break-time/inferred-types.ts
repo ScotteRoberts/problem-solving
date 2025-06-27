@@ -12,3 +12,5 @@ export type InferredPayload = {
   shard?: number[];
   applicationId: bigint;
 };
+
+export type CachedUser = typeof bot.cache.$inferredTypes.user;
