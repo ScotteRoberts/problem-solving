@@ -65,3 +65,5 @@ Discord server owners install the bot and allow it to message users.
 ## Final Note 🙏
 
 This project ultimately ending up not being pushed due to the cost of the hosting service. Still pretty interesting to learn about 😁
+
+![logs](assets/logs.png)
