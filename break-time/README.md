@@ -1,6 +1,6 @@
 # Break Time
 
-## Reqirements
+## Reqirements 📖
 
 - Create a running log of active users in Discord voice chats. If that is too hard, you can use the user's discord status as a backup measure.
 - Message users after a configurable period of time that they need to take a break
@@ -13,7 +13,7 @@
 - Users should be able to interact with the service to see how long other users in the Discord server have been online. 
   - Can be made into a leaderboard of some kind (if you are feeling adventurous)
 
-## Design
+## Design 🖊️
 
 Create a discord bot that can monitor a user's presence update.
 - If they are online, you can enter a datetime of when they went online.
@@ -22,7 +22,7 @@ Create a discord bot that can monitor a user's presence update.
 Database considerations:
 - Service needs to be refreshed, but downtime of the service resets the timer on individuals
 
-## Implementation
+## Implementation 🛠️
 
 There are a few technologies that I want to learn/practice to use while making this bot.
 
@@ -30,11 +30,11 @@ There are a few technologies that I want to learn/practice to use while making t
 - Discord APIs
 - Deno Deploy
 
-Limitations
+### Limitations
 - Discord api does not have the ability to fetch all "online" users in a given guild
 - Viewing private channels would be an "Administrator" level privilege. I would like to avoid requesting that level of permission in a Guild, so I will limit my bot's activity to public channels
 
-Challenges
+### Challenges
 - The `VoiceState.toggle` type has multiple state conditions based on the user/server audio controls
   - Mute
   - Deaf
@@ -43,13 +43,25 @@ Challenges
   - etc.
 
 
-## Testing
+## Testing 🔬
 
 There are a few Discord servers that I belong to to test functionality. 
 - Can get user feedback on timing of messages/annoyance of the project
 
 Mock a user going online and then going offline to see if the timeframe calculation is correct.
 
-## Signoff
+## Deployment 🥲
+
+I would like to have this application deployed 24/7 to keep track of activity on the discord servers. 
+
+### Challenges
+
+The online hosting options all have a minimum $0.03/hour rate to have a server up 24/7. This ends up being about $20-$30 per month.
+
+## Signoff ✅
 
 Discord server owners install the bot and allow it to message users.
+
+## Final Note 🙏
+
+This project ultimately ending up not being pushed due to the cost of the hosting service. Still pretty interesting to learn about 😁
